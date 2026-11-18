@@ -3,7 +3,7 @@
 For each requested trip: raw GPS, nearby road network, reference route,
 classifier-only route and HMM-predicted route, with a legend and layer control.
 
-Usage: python scripts/07_maps.py [partition] [trip ...]
+Usage: python scripts/visualize_routes.py [partition] [trip ...]
        (default: all student_test trips)
 """
 import sys

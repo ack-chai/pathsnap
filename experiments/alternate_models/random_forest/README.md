@@ -13,7 +13,7 @@ The comparison runner trains it with the same candidate features and trip-level
 cross-validation process as the other models:
 
 ```bash
-python scripts/03_compare_models.py random_forest --force
+python scripts/benchmark_classifiers.py random_forest --force
 ```
 
 The experiment caps each fit at 600,000 candidate rows for runtime. Raw trip

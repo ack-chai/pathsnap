@@ -3,7 +3,7 @@
 Picks the tuned configuration from results/bayes_opt/best_<model>.json when it
 exists (otherwise the untuned params of the best model in the comparison).
 Writes artifacts/model.joblib and artifacts/pipeline_config.json.
-Usage: python scripts/05_export_model.py [model]
+Usage: python scripts/export_artifacts.py [model]
 """
 import json
 import sys

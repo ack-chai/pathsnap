@@ -9,7 +9,7 @@ The student-testing trips are NOT used inside the search. After the search, the
 best configuration is re-evaluated with exactly the same 5-fold CV and
 student-test protocol as the untuned model so the two can be compared.
 
-Usage: python scripts/04_bayes_opt.py [model] [--trials N] [--folds K]
+Usage: python scripts/hyperparameter_search.py [model] [--trials N] [--folds K]
 """
 import json
 import sys

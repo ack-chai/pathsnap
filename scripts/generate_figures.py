@@ -8,7 +8,7 @@
   06_transition.png         HMM transition: straight-line GPS distance vs driving distance
   07_trellis.png            HMM trellis: states per point, transitions, Viterbi path
 
-Usage: python scripts/09_concept_figures.py [trip_id]
+Usage: python scripts/generate_figures.py [trip_id]
 """
 import sys
 from pathlib import Path

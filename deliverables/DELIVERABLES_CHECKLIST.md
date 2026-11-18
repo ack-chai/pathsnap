@@ -8,16 +8,16 @@ Repository: **https://github.com/ack-chai/pathsnap**
 
 | Required Component | What must be included | Repository Location | Verified Status |
 |---|---|---|:---:|
-| **Data processing** | Source code used to read, inspect, clean and preprocess the raw dataset | `pathsnap/io.py`<br/>`pathsnap/geo.py`<br/>`clean_data.py`<br/>`scripts/01_eda.py` | Complete |
-| **Feature engineering** | Complete source code for feature extraction (23 features) | `pathsnap/features.py`<br/>`scripts/02_build_dataset.py` | Complete |
-| **Model training** | Training scripts/notebooks for every model experimented with (10 models) | `pathsnap/models.py`<br/>`scripts/03_compare_models.py`<br/>`scripts/05_export_model.py` | Complete |
-| **Model evaluation** | Code for comparison, evaluation metrics, plots, confusion matrices | `pathsnap/metrics.py`<br/>`scripts/03_compare_models.py`<br/>`scripts/08_fit_diagnostics.py` | Complete |
-| **Hyperparameter optimisation** | Bayesian optimisation code, search configurations, experiment results | `scripts/04_bayes_opt.py`<br/>`results/bayes_opt/` | Complete |
-| **HMM and Viterbi** | Source code for route reconstruction and decoding | `pathsnap/hmm.py`<br/>`pathsnap/pipeline.py`<br/>`scripts/06_tune_hmm.py` | Complete |
+| **Data processing** | Source code used to read, inspect, clean and preprocess the raw dataset | `pathsnap/io.py`<br/>`pathsnap/geo.py`<br/>`clean_data.py`<br/>`scripts/explore_dataset.py` | Complete |
+| **Feature engineering** | Complete source code for feature extraction (23 features) | `pathsnap/features.py`<br/>`scripts/extract_features.py` | Complete |
+| **Model training** | Training scripts/notebooks for every model experimented with (10 models) | `pathsnap/models.py`<br/>`scripts/benchmark_classifiers.py`<br/>`scripts/export_artifacts.py` | Complete |
+| **Model evaluation** | Code for comparison, evaluation metrics, plots, confusion matrices | `pathsnap/metrics.py`<br/>`scripts/benchmark_classifiers.py`<br/>`scripts/model_diagnostics.py` | Complete |
+| **Hyperparameter optimisation** | Bayesian optimisation code, search configurations, experiment results | `scripts/hyperparameter_search.py`<br/>`results/bayes_opt/` | Complete |
+| **HMM and Viterbi** | Source code for route reconstruction and decoding | `pathsnap/hmm.py`<br/>`pathsnap/pipeline.py`<br/>`scripts/optimize_decoder.py` | Complete |
 | **API** | Complete backend source code, endpoints, model-loading logic | `api/main.py` | Complete |
 | **UI** | Complete evaluator interface source code | `ui/index.html`<br/>`ui/app.js`<br/>`ui/style.css` | Complete |
 | **Deployment** | Configuration files, dependencies, running instructions | `HOW_TO_RUN.md`<br/>`README.md`<br/>`requirements.txt` | Complete |
-| **Visualisations** | Folium map-generation code and other plotting scripts | `scripts/07_maps.py`<br/>`scripts/09_concept_figures.py`<br/>`deliverables/plots/` | Complete |
+| **Visualisations** | Folium map-generation code and other plotting scripts | `scripts/visualize_routes.py`<br/>`scripts/generate_figures.py`<br/>`deliverables/plots/` | Complete |
 | **Supporting results** | Relevant CSV files, experiment logs, configurations, summaries | `results/`<br/>`deliverables/tables/` | Complete |
 
 ---

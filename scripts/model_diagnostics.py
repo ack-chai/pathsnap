@@ -1,5 +1,5 @@
 """Over/underfitting evidence: in-sample (training-trip) scores of every model,
-next to its group-CV and student-test scores from 03_compare_models.py.
+next to its group-CV and student-test scores from benchmark_classifiers.py.
 
 A large gap between in-sample and CV scores means the model memorises training
 trips (overfitting); low scores everywhere means it underfits.

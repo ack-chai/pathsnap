@@ -6,7 +6,7 @@ For every model:
   * refit on all training trips, evaluate on the 10 student-testing trips,
   * record configuration, timings and metrics.
 
-Usage:  python scripts/03_compare_models.py [model ...] [--force]
+Usage:  python scripts/benchmark_classifiers.py [model ...] [--force]
 Results: results/models/runs/<model>.json, results/models/comparison.csv, plots.
 """
 import json
@@ -31,7 +31,7 @@ def summarise():
     for f in sorted(RUNS.glob("*.json")):
         r = json.loads(f.read_text())
         if r.get("base_model", r["model"]) != r["model"]:
-            continue  # tuned variants are reported by 04_bayes_opt.py
+            continue  # tuned variants are reported by hyperparameter_search.py
         rows.append({
             "model": r["model"], "family": r["family"],
             "key_config": ", ".join(f"{k}={v}" for k, v in r["params"].items()

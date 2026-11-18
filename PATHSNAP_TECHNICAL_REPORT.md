@@ -19,16 +19,16 @@ PathSnap solves this problem in two decoupled, mathematically principled stages:
 ### Repository Deliverables Checklist (Deliverable 1)
 | Required Component | Repository Location | Description |
 |---|---|---|
-| **Data Processing** | `pathsnap/io.py`, `pathsnap/geo.py`, `clean_data.py`, `scripts/01_eda.py` | Parsers for `.track`, `.nodes`, `.arcs`, `.route`, local equirectangular metric projection, coordinate validation, GPS cleaning. |
-| **Feature Engineering** | `pathsnap/features.py`, `scripts/02_build_dataset.py` | 23 spatial, kinematic, topological, and neighbor-window features; candidate generation. |
-| **Model Training** | `pathsnap/models.py`, `pathsnap/experiment.py`, `scripts/03_compare_models.py`, `scripts/05_export_model.py` | Model zoo (10 algorithms), GroupKFold splitters, subsampling, refitting pipelines. |
-| **Model Evaluation** | `pathsnap/metrics.py`, `scripts/03_compare_models.py`, `scripts/08_fit_diagnostics.py` | Candidate-level, observation-level Top-1, length-weighted route precision/recall/F1, continuity metrics. |
-| **Hyperparameter Optimisation** | `scripts/04_bayes_opt.py`, `results/bayes_opt/` | Optuna TPE Bayesian optimization across 30 trials targeting cross-validation Top-1 accuracy. |
-| **HMM and Viterbi** | `pathsnap/hmm.py`, `pathsnap/pipeline.py`, `scripts/06_tune_hmm.py` | Bounded Dijkstra graph search, transition/emission log-probabilities, Viterbi trellis solver, gap splitting. |
+| **Data Processing** | `pathsnap/io.py`, `pathsnap/geo.py`, `clean_data.py`, `scripts/explore_dataset.py` | Parsers for `.track`, `.nodes`, `.arcs`, `.route`, local equirectangular metric projection, coordinate validation, GPS cleaning. |
+| **Feature Engineering** | `pathsnap/features.py`, `scripts/extract_features.py` | 23 spatial, kinematic, topological, and neighbor-window features; candidate generation. |
+| **Model Training** | `pathsnap/models.py`, `pathsnap/experiment.py`, `scripts/benchmark_classifiers.py`, `scripts/export_artifacts.py` | Model zoo (10 algorithms), GroupKFold splitters, subsampling, refitting pipelines. |
+| **Model Evaluation** | `pathsnap/metrics.py`, `scripts/benchmark_classifiers.py`, `scripts/model_diagnostics.py` | Candidate-level, observation-level Top-1, length-weighted route precision/recall/F1, continuity metrics. |
+| **Hyperparameter Optimisation** | `scripts/hyperparameter_search.py`, `results/bayes_opt/` | Optuna TPE Bayesian optimization across 30 trials targeting cross-validation Top-1 accuracy. |
+| **HMM and Viterbi** | `pathsnap/hmm.py`, `pathsnap/pipeline.py`, `scripts/optimize_decoder.py` | Bounded Dijkstra graph search, transition/emission log-probabilities, Viterbi trellis solver, gap splitting. |
 | **API** | `api/main.py` | FastAPI server serving endpoints `/health`, `/trips`, and `/predict` with JSON responses and server-side metrics. |
 | **UI** | `ui/index.html`, `ui/app.js`, `ui/style.css` | Evaluator web interface featuring interactive Leaflet map, layer controls, and live scorecard. |
 | **Deployment** | `HOW_TO_RUN.md`, `README.md`, `requirements.txt` | Complete setup, single-laptop and two-laptop network deployment instructions. |
-| **Visualisations** | `scripts/07_maps.py`, `scripts/09_concept_figures.py`, `results/maps/`, `results/*/plots/` | Folium interactive HTML maps, architectural concept diagrams, and model evaluation plots. |
+| **Visualisations** | `scripts/visualize_routes.py`, `scripts/generate_figures.py`, `results/maps/`, `results/*/plots/` | Folium interactive HTML maps, architectural concept diagrams, and model evaluation plots. |
 | **Supporting Results** | `results/models/comparison.csv`, `results/hmm/*.csv`, `results/bayes_opt/*.json` | Full experiment logs, confusion matrices, evaluation metrics, and hyperparameter tables. |
 
 ---
@@ -217,7 +217,7 @@ While candidate classifiers predict each GPS fix independently, physical driving
 
 ## 6. Geographical Visualisation Using Folium
 
-Interactive Folium maps were generated for every trip in `student_test` and `evaluator_test` (`scripts/07_maps.py`) and saved to `results/maps/*.html`.
+Interactive Folium maps were generated for every trip in `student_test` and `evaluator_test` (`scripts/visualize_routes.py`) and saved to `results/maps/*.html`.
 
 ### Visual Hierarchy & Layer Control
 - **GPS Observations (Blue dots)**: Individual timestamped fixes showing raw sensor noise.

@@ -32,16 +32,16 @@ Repository: **https://github.com/ack-chai/pathsnap**
 
 | Required Component | What must be included | Repository Location | Verified Status |
 |---|---|---|:---:|
-| **Data processing** | Source code used to read, inspect, clean and preprocess the raw dataset | `pathsnap/io.py`<br/>`pathsnap/geo.py`<br/>`clean_data.py`<br/>`scripts/01_eda.py` | Complete |
-| **Feature engineering** | Complete source code for feature extraction (23 features) | `pathsnap/features.py`<br/>`scripts/02_build_dataset.py` | Complete |
-| **Model training** | Training scripts/notebooks for every model experimented with (10 models) | `pathsnap/models.py`<br/>`scripts/03_compare_models.py`<br/>`scripts/05_export_model.py` | Complete |
-| **Model evaluation** | Code for comparison, evaluation metrics, plots, confusion matrices | `pathsnap/metrics.py`<br/>`scripts/03_compare_models.py`<br/>`scripts/08_fit_diagnostics.py` | Complete |
-| **Hyperparameter optimisation** | Bayesian optimisation code, search configurations, experiment results | `scripts/04_bayes_opt.py`<br/>`results/bayes_opt/` | Complete |
-| **HMM and Viterbi** | Source code for route reconstruction and decoding | `pathsnap/hmm.py`<br/>`pathsnap/pipeline.py`<br/>`scripts/06_tune_hmm.py` | Complete |
+| **Data processing** | Source code used to read, inspect, clean and preprocess the raw dataset | `pathsnap/io.py`<br/>`pathsnap/geo.py`<br/>`clean_data.py`<br/>`scripts/explore_dataset.py` | Complete |
+| **Feature engineering** | Complete source code for feature extraction (23 features) | `pathsnap/features.py`<br/>`scripts/extract_features.py` | Complete |
+| **Model training** | Training scripts/notebooks for every model experimented with (10 models) | `pathsnap/models.py`<br/>`scripts/benchmark_classifiers.py`<br/>`scripts/export_artifacts.py` | Complete |
+| **Model evaluation** | Code for comparison, evaluation metrics, plots, confusion matrices | `pathsnap/metrics.py`<br/>`scripts/benchmark_classifiers.py`<br/>`scripts/model_diagnostics.py` | Complete |
+| **Hyperparameter optimisation** | Bayesian optimisation code, search configurations, experiment results | `scripts/hyperparameter_search.py`<br/>`results/bayes_opt/` | Complete |
+| **HMM and Viterbi** | Source code for route reconstruction and decoding | `pathsnap/hmm.py`<br/>`pathsnap/pipeline.py`<br/>`scripts/optimize_decoder.py` | Complete |
 | **API** | Complete backend source code, endpoints, model-loading logic | `api/main.py` | Complete |
 | **UI** | Complete evaluator interface source code | `ui/index.html`<br/>`ui/app.js`<br/>`ui/style.css` | Complete |
 | **Deployment** | Configuration files, dependencies, running instructions | `HOW_TO_RUN.md`<br/>`README.md`<br/>`requirements.txt` | Complete |
-| **Visualisations** | Folium map-generation code and other plotting scripts | `scripts/07_maps.py`<br/>`scripts/09_concept_figures.py`<br/>`deliverables/plots/` | Complete |
+| **Visualisations** | Folium map-generation code and other plotting scripts | `scripts/visualize_routes.py`<br/>`scripts/generate_figures.py`<br/>`deliverables/plots/` | Complete |
 | **Supporting results** | Relevant CSV files, experiment logs, configurations, summaries | `results/`<br/>`deliverables/tables/` | Complete |
 
 ---
@@ -216,16 +216,16 @@ def build_full_report_pdf():
         body_style
     ))
     deliv_rows = [
-        ["Data Processing", "pathsnap/io.py, geo.py, clean_data.py, scripts/01_eda.py", "Parsers for .track, .nodes, .arcs, .route, metric projection, coordinate validation."],
-        ["Feature Engineering", "pathsnap/features.py, scripts/02_build_dataset.py", "23 spatial, kinematic, topological, sequence jump, and window smoothing features."],
-        ["Model Training", "pathsnap/models.py, scripts/03_compare_models.py", "Training routines for 10 models across 6 families with 5-fold GroupKFold CV."],
-        ["Model Evaluation", "pathsnap/metrics.py, scripts/08_fit_diagnostics.py", "Top-1 accuracy, candidate miss rate, log loss, confusion matrices, route precision/recall/F1."],
-        ["Hyperparameter Optimisation", "scripts/04_bayes_opt.py, results/bayes_opt/", "Optuna TPE Bayesian optimization across 30 trials targeting CV Top-1 accuracy."],
-        ["HMM and Viterbi", "pathsnap/hmm.py, scripts/06_tune_hmm.py", "Bounded Dijkstra graph distance, emission/transition probabilities, Viterbi trellis solver."],
+        ["Data Processing", "pathsnap/io.py, geo.py, clean_data.py, scripts/explore_dataset.py", "Parsers for .track, .nodes, .arcs, .route, metric projection, coordinate validation."],
+        ["Feature Engineering", "pathsnap/features.py, scripts/extract_features.py", "23 spatial, kinematic, topological, sequence jump, and window smoothing features."],
+        ["Model Training", "pathsnap/models.py, scripts/benchmark_classifiers.py", "Training routines for 10 models across 6 families with 5-fold GroupKFold CV."],
+        ["Model Evaluation", "pathsnap/metrics.py, scripts/model_diagnostics.py", "Top-1 accuracy, candidate miss rate, log loss, confusion matrices, route precision/recall/F1."],
+        ["Hyperparameter Optimisation", "scripts/hyperparameter_search.py, results/bayes_opt/", "Optuna TPE Bayesian optimization across 30 trials targeting CV Top-1 accuracy."],
+        ["HMM and Viterbi", "pathsnap/hmm.py, scripts/optimize_decoder.py", "Bounded Dijkstra graph distance, emission/transition probabilities, Viterbi trellis solver."],
         ["API Backend", "api/main.py", "FastAPI server serving /health, /trips, and /predict with sub-200ms latency."],
         ["User Interface", "ui/index.html, ui/app.js, ui/style.css", "Evaluator web client with interactive Leaflet map, layer controls, and live scorecards."],
         ["Deployment", "HOW_TO_RUN.md, README.md, requirements.txt", "Single-machine and two-laptop distributed execution guidelines."],
-        ["Visualisations", "scripts/07_maps.py, deliverables/plots/, deliverables/maps/", "Folium interactive HTML route maps, confusion matrix grids, loss curves, and diagnostic figures."]
+        ["Visualisations", "scripts/visualize_routes.py, deliverables/plots/, deliverables/maps/", "Folium interactive HTML route maps, confusion matrix grids, loss curves, and diagnostic figures."]
     ]
     story.append(build_table(["Component", "Repository Path", "Included Content"], deliv_rows, [90, 160, 254]))
     story.append(Spacer(1, 8))
@@ -419,7 +419,7 @@ def build_full_report_pdf():
     story.append(PageBreak())
     story.append(Paragraph("6. Geographical Visualisation Using Folium", h1_style))
     story.append(Paragraph(
-        "Folium interactive maps were generated for every trip in `student_test` and `evaluator_test` (`scripts/07_maps.py`) and saved to `deliverables/maps/*.html`. Each HTML map features five distinguishable layers: "
+        "Folium interactive maps were generated for every trip in `student_test` and `evaluator_test` (`scripts/visualize_routes.py`) and saved to `deliverables/maps/*.html`. Each HTML map features five distinguishable layers: "
         "<b>Blue circles</b> (raw GPS observations), <b>Grey lines</b> (nearby road network), <b>Purple line</b> (reference route), <b>Orange dashed line</b> (classifier-only path showing jitter), and <b>Green line</b> (HMM predicted route).",
         body_style
     ))

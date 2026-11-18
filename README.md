@@ -29,15 +29,15 @@ pathsnap/                  core library
   hmm.py                   HMM / Viterbi decoder, route building, route metrics
   pipeline.py              end-to-end inference (used by API and scripts)
 scripts/
-  01_eda.py                dataset inventory, statistics, plots, Folium map
-  02_build_dataset.py      candidate/feature tables for train and student_test
-  03_compare_models.py     trains and compares 10 models (5-fold GroupKFold + student test)
-  04_bayes_opt.py          Optuna TPE Bayesian optimisation of the chosen model
-  05_export_model.py       fits the final model, writes artifacts/
-  06_tune_hmm.py           decoder tuning + classifier-only vs HMM comparison
-  07_maps.py               Folium maps of predictions vs reference
-  08_fit_diagnostics.py    in-sample vs CV vs student-test scores (overfitting check), confusion grid
-  09_concept_figures.py    explanatory figures from real data (nodes/arcs, candidates, transition, trellis)
+  explore_dataset.py                dataset inventory, statistics, plots, Folium map
+  extract_features.py      candidate/feature tables for train and student_test
+  benchmark_classifiers.py     trains and compares 10 models (5-fold GroupKFold + student test)
+  hyperparameter_search.py          Optuna TPE Bayesian optimisation of the chosen model
+  export_artifacts.py       fits the final model, writes artifacts/
+  optimize_decoder.py           decoder tuning + classifier-only vs HMM comparison
+  visualize_routes.py               Folium maps of predictions vs reference
+  model_diagnostics.py    in-sample vs CV vs student-test scores (overfitting check), confusion grid
+  generate_figures.py    explanatory figures from real data (nodes/arcs, candidates, transition, trellis)
 api/main.py                FastAPI backend (Laptop 1)
 ui/                        evaluator web UI (Laptop 2): index.html, app.js, style.css
 artifacts/                 model.joblib + pipeline_config.json (used by the API)
@@ -72,14 +72,14 @@ On macOS, LightGBM and XGBoost need OpenMP: `brew install libomp`.
 Run these from the repository root, in order:
 
 ```bash
-python scripts/01_eda.py              # results/eda/
-python scripts/02_build_dataset.py    # cache/*.parquet, results/dataset/
-python scripts/03_compare_models.py   # results/models/
-python scripts/04_bayes_opt.py        # results/bayes_opt/ (tunes the best model by CV Top-1)
-python scripts/05_export_model.py     # artifacts/model.joblib, artifacts/pipeline_config.json
-python scripts/06_tune_hmm.py         # results/hmm/, writes decoder params into the config
-python scripts/07_maps.py             # results/maps/*.html
-python scripts/08_fit_diagnostics.py  # results/models/train_vs_cv.csv + plots
+python scripts/explore_dataset.py              # results/eda/
+python scripts/extract_features.py    # cache/*.parquet, results/dataset/
+python scripts/benchmark_classifiers.py   # results/models/
+python scripts/hyperparameter_search.py        # results/bayes_opt/ (tunes the best model by CV Top-1)
+python scripts/export_artifacts.py     # artifacts/model.joblib, artifacts/pipeline_config.json
+python scripts/optimize_decoder.py         # results/hmm/, writes decoder params into the config
+python scripts/visualize_routes.py             # results/maps/*.html
+python scripts/model_diagnostics.py  # results/models/train_vs_cv.csv + plots
 ```
 
 Random seeds are fixed in `pathsnap/config.py` (`SEED = 42`).

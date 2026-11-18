@@ -123,8 +123,8 @@ included.
 ## 3. Regenerate the maps
 
 ```bash
-python scripts/07_maps.py student_test             # all 10 student-test trips
-python scripts/07_maps.py student_test 00000077    # just one trip
+python scripts/visualize_routes.py student_test             # all 10 student-test trips
+python scripts/visualize_routes.py student_test 00000077    # just one trip
 ```
 
 The output goes to `results/maps/`. Open the `.html` file to see it.
@@ -137,15 +137,15 @@ Run these from this folder, in order. Each step writes to `results/`, and some a
 write to `cache/` or `artifacts/`.
 
 ```bash
-python scripts/01_eda.py              # dataset stats, plots, EDA map          (~1 min)
-python scripts/02_build_dataset.py    # candidate + feature tables -> cache/   (a few min)
-python scripts/03_compare_models.py   # 10 models, 5-fold group CV + test      (slowest, ~15-30 min)
-python scripts/04_bayes_opt.py xgboost --trials 30   # Optuna tuning          (~10-20 min)
-python scripts/05_export_model.py     # writes artifacts/model.joblib
-python scripts/06_tune_hmm.py         # HMM decoder tuning, classifier vs HMM
-python scripts/07_maps.py             # Folium maps
-python scripts/08_fit_diagnostics.py  # overfitting check (train vs CV vs test)
-python scripts/09_concept_figures.py  # explanatory figures
+python scripts/explore_dataset.py              # dataset stats, plots, EDA map          (~1 min)
+python scripts/extract_features.py    # candidate + feature tables -> cache/   (a few min)
+python scripts/benchmark_classifiers.py   # 10 models, 5-fold group CV + test      (slowest, ~15-30 min)
+python scripts/hyperparameter_search.py xgboost --trials 30   # Optuna tuning          (~10-20 min)
+python scripts/export_artifacts.py     # writes artifacts/model.joblib
+python scripts/optimize_decoder.py         # HMM decoder tuning, classifier vs HMM
+python scripts/visualize_routes.py             # Folium maps
+python scripts/model_diagnostics.py  # overfitting check (train vs CV vs test)
+python scripts/generate_figures.py  # explanatory figures
 ```
 
 Times are rough and depend on the laptop. Scripts 03 and later need step 02 to
