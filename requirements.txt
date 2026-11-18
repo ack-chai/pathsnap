@@ -1,0 +1,17 @@
+numpy
+pandas
+scikit-learn
+lightgbm
+optuna
+pyproj
+shapely
+geopandas
+rtree
+folium
+fastapi
+uvicorn[standard]
+requests
+joblib
+matplotlib
+seaborn
+jupyter
