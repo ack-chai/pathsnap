@@ -64,6 +64,19 @@ After this, run `source .venv/bin/activate` (Mac) or `.venv\Scripts\Activate.ps1
 
 ---
 
+## Run the HMM/Viterbi regression tests
+
+With the environment activated, run:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+These tests cover connected-route decoding, observations without candidate
+roads, empty candidate tables, and invalid observation indices.
+
+---
+
 ## 2. Run the live demo (API + web UI)
 
 You need **two terminals**, both opened in this folder with the venv activated.

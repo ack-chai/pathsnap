@@ -35,9 +35,38 @@ def _split_points(t, gap_seconds):
     return np.split(np.arange(len(t)), cut)
 
 
+def _split_candidate_runs(points, starts):
+    """Split a time segment into contiguous runs that have candidate states.
+
+    Candidate generation normally guarantees at least one arc per point. If a
+    caller supplies a sparse candidate table, an observation with no states
+    should break the decoder chain instead of causing Viterbi to operate on an
+    empty score vector.
+    """
+    runs = []
+    run = []
+    for point in points:
+        if starts[point] < starts[point + 1]:
+            run.append(point)
+        elif run:
+            runs.append(np.asarray(run, dtype=np.int64))
+            run = []
+    if run:
+        runs.append(np.asarray(run, dtype=np.int64))
+    return runs
+
+
 def viterbi(net, xy, t, frame: pd.DataFrame, params: dict | None = None, score_col="p"):
     """Decode one trip. `frame` holds candidate rows (pidx, arc, t_along, p).
-    Returns an array with the chosen arc for every GPS point."""
+    Returns an array with the chosen arc for every GPS point. Points without
+    candidate rows are returned as -1 and split the sequence into independent
+    Viterbi runs, like a GPS time gap.
+    """
+    xy = np.asarray(xy)
+    t = np.asarray(t)
+    if len(xy) != len(t):
+        raise ValueError("xy and t must contain the same number of observations")
+
     prm = {**config.HMM_DEFAULTS, **(params or {})}
     beta = float(prm["beta"])
     power = float(prm["emission_power"])
@@ -45,61 +74,73 @@ def viterbi(net, xy, t, frame: pd.DataFrame, params: dict | None = None, score_c
     unreach = float(prm["unreachable_logp"])
     vmax = float(prm["max_speed_mps"])
 
-    f = frame.sort_values(["pidx", score_col], ascending=[True, False])
+    pred = np.full(len(xy), -1, dtype=np.int64)
+    if frame.empty or len(xy) == 0:
+        return pred
+
+    point_index = frame["pidx"].to_numpy()
+    if not np.issubdtype(point_index.dtype, np.integer):
+        if not np.all(np.isfinite(point_index)) or not np.all(point_index == np.floor(point_index)):
+            raise ValueError("pidx values must be integer observation indices")
+        point_index = point_index.astype(np.int64)
+    if np.any((point_index < 0) | (point_index >= len(xy))):
+        raise ValueError("pidx values must be within the observation range")
+
+    f = frame.assign(pidx=point_index).sort_values(["pidx", score_col], ascending=[True, False])
     f = f.groupby("pidx", sort=True).head(top_m)
     starts = np.searchsorted(f["pidx"].to_numpy(), np.arange(len(xy) + 1))
     arcs_all = f["arc"].to_numpy()
     tal_all = f["t_along"].to_numpy()
     em_all = power * np.log(np.clip(f[score_col].to_numpy(), 1e-6, 1.0))
 
-    pred = np.full(len(xy), -1, dtype=np.int64)
-    for seg in _split_points(t, prm["gap_seconds"]):
-        V = None
-        back = []
-        prev = None
-        for i in seg:
-            s, e = starts[i], starts[i + 1]
-            arcs, tal, em = arcs_all[s:e], tal_all[s:e], em_all[s:e]
-            if V is None:
-                V = em.copy()
-                back.append(None)
+    for time_segment in _split_points(t, prm["gap_seconds"]):
+        for seg in _split_candidate_runs(time_segment, starts):
+            V = None
+            back = []
+            prev = None
+            for i in seg:
+                s, e = starts[i], starts[i + 1]
+                arcs, tal, em = arcs_all[s:e], tal_all[s:e], em_all[s:e]
+                if V is None:
+                    V = em.copy()
+                    back.append(None)
+                    prev = (i, arcs, tal)
+                    continue
+                pi, parcs, ptal = prev
+                gc = float(np.linalg.norm(xy[i] - xy[pi]))
+                dt = max(float(t[i] - t[pi]), 1.0)
+                limit = min(vmax * dt, 3.0 * gc + 200.0) + 50.0
+                T = np.full((len(parcs), len(arcs)), unreach)
+                for r, (a, ta) in enumerate(zip(parcs, ptal)):
+                    rest_a = (1.0 - ta) * net.length[a]
+                    reach = None
+                    for c, (b, tb) in enumerate(zip(arcs, tal)):
+                        if a == b:
+                            rd = abs(tb - ta) * net.length[a]
+                        else:
+                            head_b = tb * net.length[b]
+                            budget = limit - rest_a - head_b
+                            if budget < 0:
+                                continue
+                            if reach is None:
+                                reach = net.dists_from(int(net.dst[a]), limit)
+                            d = reach.get(int(net.src[b]))
+                            if d is None or d > budget:
+                                continue
+                            rd = rest_a + d + head_b
+                        T[r, c] = -abs(rd - gc) / beta
+                scores = V[:, None] + T
+                bp = np.argmax(scores, axis=0)
+                V = scores[bp, np.arange(len(arcs))] + em
+                back.append(bp)
                 prev = (i, arcs, tal)
-                continue
-            pi, parcs, ptal = prev
-            gc = float(np.linalg.norm(xy[i] - xy[pi]))
-            dt = max(float(t[i] - t[pi]), 1.0)
-            limit = min(vmax * dt, 3.0 * gc + 200.0) + 50.0
-            T = np.full((len(parcs), len(arcs)), unreach)
-            for r, (a, ta) in enumerate(zip(parcs, ptal)):
-                rest_a = (1.0 - ta) * net.length[a]
-                reach = None
-                for c, (b, tb) in enumerate(zip(arcs, tal)):
-                    if a == b:
-                        rd = abs(tb - ta) * net.length[a]
-                    else:
-                        head_b = tb * net.length[b]
-                        budget = limit - rest_a - head_b
-                        if budget < 0:
-                            continue
-                        if reach is None:
-                            reach = net.dists_from(int(net.dst[a]), limit)
-                        d = reach.get(int(net.src[b]))
-                        if d is None or d > budget:
-                            continue
-                        rd = rest_a + d + head_b
-                    T[r, c] = -abs(rd - gc) / beta
-            scores = V[:, None] + T
-            bp = np.argmax(scores, axis=0)
-            V = scores[bp, np.arange(len(arcs))] + em
-            back.append(bp)
-            prev = (i, arcs, tal)
-        # backtrack
-        state = int(np.argmax(V))
-        for k in range(len(seg) - 1, -1, -1):
-            i = seg[k]
-            pred[i] = arcs_all[starts[i] + state]
-            if back[k] is not None:
-                state = int(back[k][state])
+            # Backtrack independently within this valid candidate run.
+            state = int(np.argmax(V))
+            for k in range(len(seg) - 1, -1, -1):
+                i = seg[k]
+                pred[i] = arcs_all[starts[i] + state]
+                if back[k] is not None:
+                    state = int(back[k][state])
     return pred
 
 
