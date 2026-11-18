@@ -35,4 +35,8 @@ HMM_DEFAULTS = {
     "gap_seconds": 60.0,      # time gap that splits the trip into independent pieces
     "max_speed_mps": 50.0,    # used to bound the shortest-path search
     "unreachable_logp": -30.0,  # log-prob for transitions with no path in range
+    # Kinematic extensions
+    "turn_weight": 0.08,      # angular heading deflection penalty weight (cosine)
+    "spatial_weight": 0.02,   # Gaussian GPS sensor prior blend weight
+    "sigma_gps": 15.0,        # GPS measurement noise std-dev (metres)
 }

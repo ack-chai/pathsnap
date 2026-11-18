@@ -51,7 +51,10 @@
   "gap_seconds": 180.0,
   "max_speed_mps": 50.0,
   "unreachable_logp": -30.0,
-  "top_m": 8
+  "top_m": 8,
+  "turn_weight": 0.08,
+  "spatial_weight": 0.02,
+  "sigma_gps": 15.0
  },
  "label_max_dist_m": 100.0
 }
