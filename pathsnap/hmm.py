@@ -75,7 +75,7 @@ def viterbi(net, xy, t, frame: pd.DataFrame, params: dict | None = None, score_c
     vmax = float(prm["max_speed_mps"])
 
     pred = np.full(len(xy), -1, dtype=np.int64)
-    if frame.empty or len(xy) == 0:
+    if frame.empty:
         return pred
 
     point_index = frame["pidx"].to_numpy()

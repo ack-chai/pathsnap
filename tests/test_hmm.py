@@ -75,6 +75,11 @@ class ViterbiTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "within the observation range"):
             viterbi(self.net, np.zeros((2, 2)), np.array([0.0, 1.0]), frame, self.params)
 
+    def test_rejects_candidates_for_empty_track(self):
+        frame = pd.DataFrame({"pidx": [0], "arc": [0], "t_along": [0.5], "p": [0.9]})
+        with self.assertRaisesRegex(ValueError, "within the observation range"):
+            viterbi(self.net, np.empty((0, 2)), np.array([]), frame, self.params)
+
 
 if __name__ == "__main__":
     unittest.main()
