@@ -46,8 +46,8 @@
   "min_k": 3
  },
  "hmm": {
-  "beta": 5.0,
-  "emission_power": 0.5,
+  "beta": 10.0,
+  "emission_power": 0.25,
   "gap_seconds": 180.0,
   "max_speed_mps": 50.0,
   "unreachable_logp": -30.0,
