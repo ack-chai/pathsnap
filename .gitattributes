@@ -1,0 +1,16 @@
+# Tell GitHub Linguist to ignore generated/output files for language stats
+# so the repo shows Python as the primary language.
+
+# Folium HTML maps (generated output, not source code)
+results/maps/*.html        linguist-generated=true
+results/eda/*.html         linguist-generated=true
+deliverables/maps/*.html   linguist-generated=true
+ui/*.html                  linguist-documentation=true
+
+# CSV / JSON result files (data, not code)
+results/**/*.csv           linguist-generated=true
+results/**/*.json          linguist-generated=true
+experiments/**/*.json      linguist-generated=true
+
+# Notebook outputs if any
+*.ipynb                    linguist-detectable=true
