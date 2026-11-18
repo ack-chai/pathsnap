@@ -1,39 +1,52 @@
-# Random Forest comparison experiment
+# Random Forest — Experiment Record
 
-This is an archived comparison model, not the model used by the deployed
-PathSnap pipeline. The deployed artifact remains the tuned XGBoost model in
-`artifacts/model.joblib`.
+## Algorithm Family
+Ensemble (bagging)
 
-## Model and reproducibility
+## Description
+Averages 200 decision trees trained on bootstrap samples with random feature subsets. Reduces variance relative to a single tree and produces calibrated probability estimates.
 
-The Random Forest implementation is part of the shared model registry in
-`pathsnap/models.py`; it uses scikit-learn `RandomForestClassifier` with 200
-trees, `min_samples_leaf=5`, `max_features="sqrt"`, and `random_state=42`.
-The comparison runner trains it with the same candidate features and trip-level
-cross-validation process as the other models:
+## Configuration
+```
+{
+  "n_estimators": 200,
+  "min_samples_leaf": 5,
+  "max_features": "sqrt",
+  "n_jobs": -1,
+  "random_state": 42
+}
+```
 
+## How to Reproduce
 ```bash
 python scripts/benchmark_classifiers.py random_forest --force
 ```
 
-The experiment caps each fit at 600,000 candidate rows for runtime. Raw trip
-data is not committed; follow the dataset setup instructions in the root
-README before reproducing the run.
+## Recorded Results
 
-## Recorded results
+### Cross-Validation (5-fold GroupKFold, 80 training trips)
+| Metric | Value |
+|---|---|
+| Macro F1 (mean) | 0.9275 |
+| Top-1 Accuracy (mean) | 0.8774 |
+| Log Loss (mean) | 0.0853 |
 
-These are the results from the recorded run in `results.json`:
+### Student-Testing Partition (10 trips)
+| Metric | Value |
+|---|---|
+| Top-1 Accuracy | 0.8922 |
+| Macro F1 | 0.9353 |
+| Precision (macro) | 0.9412 |
+| Recall (macro) | 0.9295 |
+| Log Loss | 0.0659 |
+| Route Continuity | 0.9551 |
+| Candidate Miss Rate | 0.0010 |
 
-| Metric | 5-fold training CV | Student Testing |
-|---|---:|---:|
-| Candidate-row accuracy | — | 97.36% |
-| Macro F1 | 92.75% | 93.53% |
-| Observation-level top-1 accuracy | 87.74% | 89.22% |
-| Log loss | 0.0853 | 0.0659 |
-| Route continuity | 94.85% | 95.51% |
-| Candidate miss rate | — | 0.10% |
+### Timing
+| | Value |
+|---|---|
+| Fit time (full train) | 46.9s |
+| Inference | 2.19 ms / 1k rows |
 
-The full fold metrics, confusion matrix, timings, and model configuration are
-in `results.json`. Candidate-row accuracy is not interchangeable with
-observation-level top-1 accuracy: the latter selects the highest-scoring road
-candidate for each GPS observation.
+## Notes
+This model was not selected as the final model. See the comparison table in `results/models/comparison.csv` for the full ranking.
