@@ -153,7 +153,9 @@ tiles and Leaflet load from the internet.
   Transition = `-|network distance - straight-line distance| / beta`, where the
   network distance comes from a bounded Dijkstra search on the directed graph.
   Unreachable transitions get a fixed low log-probability. The trip is split
-  at time gaps longer than `gap_seconds`. Decoding uses Viterbi.
+  at time gaps longer than `gap_seconds`. If an observation has no candidate
+  rows, it is returned as unmatched (`-1`) and decoding resumes in a new
+  independent run after that point. Decoding uses Viterbi.
 - **Metrics.** Candidate-level accuracy, precision, recall, macro F1, log loss
   and confusion matrix. Observation-level Top-1 accuracy, candidate miss rate,
   route continuity, length-weighted route precision/recall/F1 and route
